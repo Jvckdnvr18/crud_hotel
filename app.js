@@ -35,16 +35,11 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/guests', guestRoutes);
 app.use('/api/bookings', bookingRoutes);
 
-// Start server after DB connects and handle connection errors
-const startServer = async () => {
-    try {
-        // connectDB is now the function itself (not a Promise), so we can await its execution.
-        await connectDB();
-        app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
-    } catch (err) {
-        console.error('Failed to connect to database, exiting:', err.message || err);
-        process.exit(1);
-    }
-};
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`🚀 Local Server running on http://localhost:${PORT}`);
+    });
+}
 
-startServer();
+// 3. CRITICAL VERCEL EXPORT: Export the application handler
+module.exports = app;
