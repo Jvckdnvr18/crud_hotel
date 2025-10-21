@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const bookingController = require('/Users/Admin/Documents/Back_end_Mongo/controllers/booking.js');
+const bookingController = require('../controllers/booking.js');
 
 // All routes are prefixed with /api/bookings
 
