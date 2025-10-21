@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 // Load environment variables immediately
 dotenv.config();
@@ -20,14 +21,25 @@ const bookingRoutes = require('./routes/booking.js');
 
 const app = express();
 
+// Connect to MongoDB
+connectDB().catch(err => console.error('MongoDB connection error:', err));
+
 // Middleware
 app.use(express.json());
 // Note: express.json() is now sufficient and modern, but keeping bodyParser for compatibility.
 app.use(bodyParser.json());
 
 // Root route
-app.get('/', (req, res) => {
-    res.send('<h1>🏨 Hotel Management API is running!</h1><p>Access endpoints at /api/rooms, /api/guests, and /api/bookings</p>');
+app.get('/', async (req, res) => {
+    try {
+        // Quick DB check
+        if (mongoose.connection.readyState !== 1) {
+            await connectDB();
+        }
+        res.send('<h1>🏨 Hotel Management API is running!</h1><p>Access endpoints at /api/rooms, /api/guests, and /api/bookings</p>');
+    } catch (error) {
+        res.status(500).send('Database connection error. Please try again.');
+    }
 });
 
 // Mount routers (This is line 26, now using the actual router function)

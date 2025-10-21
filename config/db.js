@@ -7,24 +7,40 @@ const connectDB = async () => {
         throw new Error('MONGO_URI environment variable is not set');
     }
 
-    // Reuse existing connection in serverless environments
-    if (mongoose.connection.readyState === 1) {
-        return mongoose;
-    }
-    if (global._mongoosePromise) {
-        return global._mongoosePromise;
-    }
+    try {
+        // Reuse existing connection in serverless environments
+        if (mongoose.connection.readyState === 1) {
+            return mongoose.connection;
+        }
 
-    global._mongoosePromise = mongoose.connect(uri)
-        .then(conn => {
-            console.log(`MongoDB Connected: ${conn.connection.host}`);
-            return mongoose;
-        })
-        .catch(err => {
-            console.error('MongoDB connection failed:', err);
-            global._mongoosePromise = null;
-            throw err;
+        const options = {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            bufferCommands: false, // Disable buffering
+            serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+            socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+        };
+
+        const conn = await mongoose.connect(uri, options);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        
+        // Handle connection errors
+        mongoose.connection.on('error', err => {
+            console.error('MongoDB connection error:', err);
         });
+
+        mongoose.connection.on('disconnected', () => {
+            console.log('MongoDB disconnected');
+        });
+
+        return conn;
+    } catch (error) {
+        console.error('MongoDB connection failed:', error);
+        throw error;
+    }
+};
+
+module.exports = connectDB;
 
     return global._mongoosePromise;
 };
