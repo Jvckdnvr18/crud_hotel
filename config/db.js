@@ -1,38 +1,25 @@
-// ...existing code...
 const mongoose = require('mongoose');
 
-const connectDB = async () => {
+async function connectDB() {
     const uri = process.env.MONGO_URI;
     if (!uri) {
         throw new Error('MONGO_URI environment variable is not set');
     }
 
     try {
-        // Reuse existing connection in serverless environments
         if (mongoose.connection.readyState === 1) {
             return mongoose.connection;
         }
 
-        const options = {
+        const conn = await mongoose.connect(uri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            bufferCommands: false, // Disable buffering
-            serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-            socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-        };
+            bufferCommands: false,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000
+        });
 
-        const conn = await mongoose.connect(uri, options);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
-        
-        // Handle connection events
-        mongoose.connection.on('error', err => {
-            console.error('MongoDB connection error:', err);
-        });
-
-        mongoose.connection.on('disconnected', () => {
-            console.log('MongoDB disconnected');
-        });
-
         return conn;
     } catch (error) {
         console.error('MongoDB connection failed:', error);
