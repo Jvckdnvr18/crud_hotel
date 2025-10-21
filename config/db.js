@@ -24,7 +24,7 @@ const connectDB = async () => {
         const conn = await mongoose.connect(uri, options);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
         
-        // Handle connection errors
+        // Handle connection events
         mongoose.connection.on('error', err => {
             console.error('MongoDB connection error:', err);
         });
@@ -38,12 +38,6 @@ const connectDB = async () => {
         console.error('MongoDB connection failed:', error);
         throw error;
     }
-};
+}
 
 module.exports = connectDB;
-
-    return global._mongoosePromise;
-};
-
-module.exports = connectDB;
-// ...existing code...
