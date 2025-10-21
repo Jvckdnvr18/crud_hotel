@@ -1,5 +1,5 @@
-const Booking = require('/Users/Admin/Documents/Back_end_Crudhotel/models/booking.js');
-const Room = require('/Users/Admin/Documents/Back_end_Crudhotel/models/room.js');
+const Booking = require('../models/booking.js');
+const Room = require('../models/room.js');
 
 // Helper function to update room status
 const updateRoomStatus = async (roomId, status) => {

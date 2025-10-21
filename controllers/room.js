@@ -1,4 +1,4 @@
-const Room = require('/Users/Admin/Documents/Back_end_Crudhotel/models/room.js');
+const Room = require('../models/room.js');
 
 // @desc    Get all rooms
 // @route   GET /api/rooms

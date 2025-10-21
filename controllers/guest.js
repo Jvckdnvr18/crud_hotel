@@ -1,4 +1,4 @@
-const Guest = require('/Users/Admin/Documents/Back_end_Crudhotel/models/guest.js');
+const Guest = require('../models/guest.js');
 
 // @desc    Get all guests
 // @route   GET /api/guests
